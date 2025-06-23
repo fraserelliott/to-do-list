@@ -1,0 +1,13 @@
+ul {
+    list-style-type: none;
+}
+
+.task {
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+}
+
+.deletebtn {
+    margin-left: auto;
+}
