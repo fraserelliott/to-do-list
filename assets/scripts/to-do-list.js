@@ -4,12 +4,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const tasklist = document.getElementById("tasklist");
     const taskinput = document.getElementById("taskinput")
 
-    taskinput.addEventListener('blur', () => {
+    taskinput.addEventListener("blur", () => {
         parseInput();
     })
 
-    taskinput.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
+    taskinput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
             parseInput();
         }
     })
@@ -43,20 +43,39 @@ document.addEventListener('DOMContentLoaded', function () {
         let li = document.createElement("li");
         li.classList.add("task");
 
-        let span = document.createElement("span");
-        span.textContent = t;
-        li.appendChild(span);
+        let input = document.createElement("input");
+        input.value = t;
+        li.appendChild(input);
 
-        let btn = document.createElement("button");
-        btn.classList.add("deletebtn");
-        btn.textContent = "X";
-        btn.addEventListener("click", (e) => {
-            deleteElement(btn);
+        input.addEventListener("blur", () => {
+            parseEdit(input, task);
+        })
+
+        let deletebtn = document.createElement("button");
+        deletebtn.classList.add("taskbtn");
+        deletebtn.textContent = "X";
+        deletebtn.addEventListener("click", (e) => {
+            deleteElement(deletebtn);
         });
-        li.appendChild(btn);
+        li.appendChild(deletebtn);
 
         tasklist.append(li);
         resetInput();
+    }
+
+    function parseEdit(input, task) {
+        const t = input.value;
+
+        //First check if the text has changed from the original task
+        if (t === task.text) {
+            return;
+        }
+
+        if (checkForDuplicate(t)) {
+            alert("You've already added that task.");
+        } else {
+            task.text = t;
+        }
     }
 
     function checkForDuplicate(t) {
@@ -65,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function deleteElement(button) {
         let li = button.parentNode;
-        let t = li.querySelector('span').textContent;
+        let t = li.querySelector('input').value;
 
         const index = tasks.findIndex(task => task.text === t);
         if (index !== -1) {
