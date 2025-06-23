@@ -8,6 +8,11 @@ ul {
     width: 90%;
 }
 
+.task input {
+    flex-grow: 1;
+    border: none;
+}
+
 .taskbtn {
     margin-left: auto;
 }

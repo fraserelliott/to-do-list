@@ -40,17 +40,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tasks.push(task);
 
+        //Flexbox container for the row
         let li = document.createElement("li");
         li.classList.add("task");
 
+        //The text for the task
         let input = document.createElement("input");
         input.value = t;
-        li.appendChild(input);
 
         input.addEventListener("blur", () => {
             parseEdit(input, task);
-        })
+        });
 
+        input.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                input.blur();
+            }
+        });
+
+        li.appendChild(input);
+
+        //Button to mark it complete
+        let completebtn = document.createElement("button");
+        completebtn.classList.add("taskbtn");
+        completebtn.textContent = "\u2713";
+        completebtn.addEventListener("click", (e) => {
+            toggleComplete(completebtn);
+        });
+        li.appendChild(completebtn);
+
+        //Button to delete
         let deletebtn = document.createElement("button");
         deletebtn.classList.add("taskbtn");
         deletebtn.textContent = "X";
@@ -78,6 +97,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function toggleComplete(button) {
+        
+    }
+
     function checkForDuplicate(t) {
         return tasks.some(task => task.text === t);
     }
@@ -86,11 +109,15 @@ document.addEventListener('DOMContentLoaded', function () {
         let li = button.parentNode;
         let t = li.querySelector('input').value;
 
-        const index = tasks.findIndex(task => task.text === t);
+        const index = findTask(t);
         if (index !== -1) {
             tasks.splice(index, 1);
         }
 
         tasklist.removeChild(li);
+    }
+
+    function findTask(t) {
+        return tasks.findIndex(task => task.text === t);
     }
 });
