@@ -10,9 +10,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     taskinput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
+            event.preventDefault();
             parseInput();
         }
     })
+
+    taskinput.addEventListener('input', function () {
+        resizeTextArea(this);
+    });
+
+    resizeTextArea(taskinput);
 
     function parseInput() {
         const text = taskinput.value.trim();
@@ -24,6 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function resetInput() {
         taskinput.value = "";
+        resizeTextArea(taskinput);
     }
 
     function addTask(t) {
@@ -43,32 +51,38 @@ document.addEventListener('DOMContentLoaded', function () {
         //Flexbox container for the row
         let li = document.createElement("li");
         li.classList.add("task");
-        
+
 
         //The text for the task
-        let input = document.createElement("input");
-        input.value = t;
+        let textarea = document.createElement("textarea");
+        textarea.value = t;
+        textarea.rows = 1;
 
-        input.addEventListener("blur", () => {
-            parseEdit(input, task);
+        textarea.addEventListener("blur", () => {
+            parseEdit(textarea, task);
+            console.log("blur fired");
         });
 
-        input.addEventListener("keydown", (event) => {
+        textarea.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
-                input.blur();
+                event.preventDefault();
             }
         });
 
-        input.addEventListener("dblclick", () => {
+        textarea.addEventListener("dblclick", () => {
             toggleComplete(li, task);
         });
 
-        li.appendChild(input);
+        textarea.addEventListener('input', function () {
+            resizeTextArea(this);
+        });
+
+        li.appendChild(textarea);
 
         //Button to mark it complete
         let completebtn = document.createElement("button");
         completebtn.textContent = "\u2713";
-        completebtn.ariaLabel = "Mark Complete";
+        completebtn.setAttribute('aria-label', 'Mark Complete');
         completebtn.addEventListener("click", (e) => {
             toggleComplete(li, task);
         });
@@ -77,18 +91,19 @@ document.addEventListener('DOMContentLoaded', function () {
         //Button to delete
         let deletebtn = document.createElement("button");
         deletebtn.textContent = "X";
-        deletebtn.ariaLabel = "Delete";
+        deletebtn.setAttribute('aria-label', 'Delete');
         deletebtn.addEventListener("click", (e) => {
             deleteElement(li, task);
         });
         li.appendChild(deletebtn);
 
         tasklist.append(li);
+        resizeTextArea(textarea);
         resetInput();
     }
 
-    function parseEdit(input, task) {
-        const t = input.value;
+    function parseEdit(textarea, task) {
+        const t = textarea.value;
 
         //First check if the text has changed from the original task before checking for duplicates to avoid it returning true because the text hasn't changed (and therefore array already contains this)
         if (t === task.text) {
@@ -97,6 +112,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (checkForDuplicate(t)) {
             alert("You've already added that task.");
+            textarea.value = task.text;
         } else {
             task.text = t;
         }
@@ -118,5 +134,10 @@ document.addEventListener('DOMContentLoaded', function () {
     function toggleComplete(li, task) {
         task.completed = !task.completed;
         li.classList.toggle("completed");
+    }
+
+    function resizeTextArea(textArea) {
+        textArea.style.height = 'auto';
+        textArea.style.height = textArea.scrollHeight + 'px';
     }
 });

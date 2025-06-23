@@ -71,7 +71,7 @@ ul {
     background-color: green;
 }
 
-.task input,
+.task textarea,
 .task button {
     color: var(--font-color);
     font-size: inherit;
@@ -79,16 +79,26 @@ ul {
     margin: 0 10px 0 10px;
 }
 
-.task input {
+.task textarea {
     background-color: inherit;
     flex-grow: 1;
     border: none;
+    resize: none;
+    overflow: hidden;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    line-height: 1.5;
+    box-sizing: border-box;
+    height: auto;
 }
 
 .task button {
     margin-left: auto;
     background-color: var(--btn-bg);
     border: 3px solid var(--font-color);
+    height: 35px;
+    width: 35px;
+    align-self: center;
 }
 
 main {
