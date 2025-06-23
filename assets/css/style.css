@@ -41,7 +41,7 @@ h1 {
     font-size: 40px; 
 }
 
-.darkmodebtn {
+#darkmodebtn {
     position: fixed;
     right: 10px;
     top: 10px;
@@ -49,6 +49,7 @@ h1 {
     font-size: 30px;
     background-color: transparent;
     cursor: pointer;
+    color: var(--font-color);
 }
 
 ul {
@@ -108,4 +109,10 @@ main {
 footer {
     font-weight: bold;
     margin: 10px;
+    color: var(--font-color);
+}
+
+button:active {
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
 }

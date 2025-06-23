@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const tasklist = document.getElementById("tasklist");
     const taskinput = document.getElementById("taskinput")
 
+    document.getElementById('darkmodebtn').addEventListener("click", (e) => {
+        document.body.classList.toggle('darkmode');
+    });
+
     taskinput.addEventListener("blur", () => {
         parseInput();
     })
