@@ -8,7 +8,12 @@ ul {
     width: 90%;
 }
 
+.completed {
+    background-color: green;
+}
+
 .task input {
+    background-color: inherit;
     flex-grow: 1;
     border: none;
 }

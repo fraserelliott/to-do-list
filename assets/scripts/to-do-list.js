@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', function () {
         //Flexbox container for the row
         let li = document.createElement("li");
         li.classList.add("task");
+        
 
         //The text for the task
         let input = document.createElement("input");
@@ -58,6 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
+        input.addEventListener("dblclick", () => {
+            toggleComplete(li, task);
+        });
+
         li.appendChild(input);
 
         //Button to mark it complete
@@ -65,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         completebtn.classList.add("taskbtn");
         completebtn.textContent = "\u2713";
         completebtn.addEventListener("click", (e) => {
-            toggleComplete(completebtn);
+            toggleComplete(li, task);
         });
         li.appendChild(completebtn);
 
@@ -74,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
         deletebtn.classList.add("taskbtn");
         deletebtn.textContent = "X";
         deletebtn.addEventListener("click", (e) => {
-            deleteElement(deletebtn);
+            deleteElement(li, task);
         });
         li.appendChild(deletebtn);
 
@@ -85,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function parseEdit(input, task) {
         const t = input.value;
 
-        //First check if the text has changed from the original task
+        //First check if the text has changed from the original task before checking for duplicates to avoid it returning true because the text hasn't changed (and therefore array already contains this)
         if (t === task.text) {
             return;
         }
@@ -97,19 +102,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function toggleComplete(button) {
-        
-    }
-
     function checkForDuplicate(t) {
         return tasks.some(task => task.text === t);
     }
 
-    function deleteElement(button) {
-        let li = button.parentNode;
-        let t = li.querySelector('input').value;
-
-        const index = findTask(t);
+    function deleteElement(li, task) {
+        const index = tasks.indexOf(task);
         if (index !== -1) {
             tasks.splice(index, 1);
         }
@@ -117,7 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
         tasklist.removeChild(li);
     }
 
-    function findTask(t) {
-        return tasks.findIndex(task => task.text === t);
+    function toggleComplete(li, task) {
+        task.completed = !task.completed;
+        li.classList.toggle("completed");
     }
 });
