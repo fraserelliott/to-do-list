@@ -67,8 +67,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Button to mark it complete
         let completebtn = document.createElement("button");
-        completebtn.classList.add("taskbtn");
         completebtn.textContent = "\u2713";
+        completebtn.ariaLabel = "Mark Complete";
         completebtn.addEventListener("click", (e) => {
             toggleComplete(li, task);
         });
@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         //Button to delete
         let deletebtn = document.createElement("button");
-        deletebtn.classList.add("taskbtn");
         deletebtn.textContent = "X";
+        deletebtn.ariaLabel = "Delete";
         deletebtn.addEventListener("click", (e) => {
             deleteElement(li, task);
         });

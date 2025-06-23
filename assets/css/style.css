@@ -1,15 +1,82 @@
+:root {
+--bg-page: #fdf6e3;
+--bg-row:  #fff9e6;
+--font-color: #4b3b2b;
+--border-color: #e4d7b9;
+--btn-bg: #d9c89b;
+--btn-hover-bg: #cdb67a;
+--accent-color: #b28843;
+--focus-outline: #a3783c;
+--primary-font: 'Roboto', sans-serif;
+--header-font: 'Pacifico', cursive;
+}
+
+.darkmode {
+    --bg-page: #1e1e1e;
+    --bg-row: #252526;
+    --font-color: #d4d4d4;
+    --border-color: #3c3c3c;
+    --btn-bg: #0e639c;
+    --btn-hover-bg: #1177bb;
+    --accent-color: #569cd6;
+    --focus-outline: #3794ff;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    background-color: var(--bg-page);
+}
+
+h1 {
+    text-align: center;
+    color: var(--font-color);
+    font-family: var(--header-font);
+    text-decoration: underline;
+    font-size: 40px; 
+}
+
+.darkmodebtn {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    border: none;
+    font-size: 30px;
+    background-color: transparent;
+    cursor: pointer;
+}
+
 ul {
     list-style-type: none;
+    background-color: var(--bg-row);
+    font-family: var(--primary-font);
 }
 
 .task {
     display: flex;
     flex-direction: row;
     width: 90%;
+    border-bottom: 1px solid #e4d7b9;
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+    font-size: 20px;
 }
 
 .completed {
     background-color: green;
+}
+
+.task input,
+.task button {
+    color: var(--font-color);
+    font-size: inherit;
+    font-family: inherit;
+    margin: 0 10px 0 10px;
 }
 
 .task input {
@@ -18,6 +85,17 @@ ul {
     border: none;
 }
 
-.taskbtn {
+.task button {
     margin-left: auto;
+    background-color: var(--btn-bg);
+    border: 3px solid var(--font-color);
+}
+
+main {
+    flex: 1;
+}
+
+footer {
+    font-weight: bold;
+    margin: 10px;
 }
