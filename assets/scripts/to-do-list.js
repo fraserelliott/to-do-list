@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    const tasks = []
+    const tasks = [];
+    const deleteHistory = [];
     const tasklist = document.getElementById("tasklist");
-    const taskinput = document.getElementById("taskinput")
+    const taskinput = document.getElementById("taskinput");
+    const undobtn = document.getElementById("undobtn");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
@@ -26,6 +28,21 @@ document.addEventListener('DOMContentLoaded', function () {
         resizeTextArea(this);
     });
 
+    undobtn.addEventListener("click", (e) => {
+        undoDelete();
+    });
+
+    function undoDelete() {
+        console.log(deleteHistory);
+        let data = deleteHistory.pop();
+        if (checkForDuplicate(data.deletedTask.text)) {
+            alert("You've already added this task back to the list.");
+        } else {
+            tasks.push(data.deletedTask);
+            tasklist.append(data.row);
+        }
+    }
+
     function parseInput() {
         const text = taskinput.value.trim();
 
@@ -40,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function addTask(t) {
-        if (t==="") {
+        if (t === "") {
             alert("You can't add an empty task.");
             return;
         }
@@ -147,6 +164,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         tasklist.removeChild(li);
+        deleteHistory.push({ row: li, deletedTask: task });
+        console.log(deleteHistory);
     }
 
     function toggleComplete(li, task) {

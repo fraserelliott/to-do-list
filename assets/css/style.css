@@ -111,6 +111,14 @@ ul {
     align-self: center;
 }
 
+#undobtn {
+    background-color: var(--btn-bg);
+    border: 3px solid var(--font-color);
+    position: fixed;
+    left: 10px;
+    top: 10px;
+}
+
 main {
     flex: 1;
 }
