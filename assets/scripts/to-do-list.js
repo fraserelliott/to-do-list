@@ -16,14 +16,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (event.key === "Enter") {
             event.preventDefault();
             parseInput();
+        } else if (event.key === "Escape") {
+            taskinput.value = "";
+            taskinput.blur();
         }
     })
 
     taskinput.addEventListener('input', function () {
         resizeTextArea(this);
     });
-
-    resizeTextArea(taskinput);
 
     function parseInput() {
         const text = taskinput.value.trim();
@@ -39,6 +40,11 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function addTask(t) {
+        if (t==="") {
+            alert("You can't add an empty task.");
+            return;
+        }
+
         if (checkForDuplicate(t)) {
             resetInput();
             alert("You've already added that task.");
@@ -64,12 +70,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
         textarea.addEventListener("blur", () => {
             parseEdit(textarea, task);
-            console.log("blur fired");
         });
 
         textarea.addEventListener("keydown", (event) => {
             if (event.key === "Enter") {
                 event.preventDefault();
+            } if (event.key === "Escape") {
+                textarea.value = task.text;
+                textarea.blur();
             }
         });
 
@@ -108,6 +116,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function parseEdit(textarea, task) {
         const t = textarea.value;
+
+        if (t === "") {
+            alert("You can't change a task to empty.");
+            textarea.value = task.text;
+            return;
+        }
 
         //First check if the text has changed from the original task before checking for duplicates to avoid it returning true because the text hasn't changed (and therefore array already contains this)
         if (t === task.text) {

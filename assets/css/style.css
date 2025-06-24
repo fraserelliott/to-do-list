@@ -1,14 +1,14 @@
 :root {
---bg-page: #fdf6e3;
---bg-row:  #fff9e6;
---font-color: #4b3b2b;
---border-color: #e4d7b9;
---btn-bg: #d9c89b;
---btn-hover-bg: #cdb67a;
---accent-color: #b28843;
---focus-outline: #a3783c;
---primary-font: 'Roboto', sans-serif;
---header-font: 'Pacifico', cursive;
+    --bg-page: #fdf6e3;
+    --bg-row: #fff9e6;
+    --font-color: #4b3b2b;
+    --border-color: #e4d7b9;
+    --btn-bg: #d9c89b;
+    --btn-hover-bg: #cdb67a;
+    --accent-color: #b28843;
+    --focus-outline: #a3783c;
+    --primary-font: 'Roboto', sans-serif;
+    --header-font: 'Pacifico', cursive;
 }
 
 .darkmode {
@@ -22,7 +22,8 @@
     --focus-outline: #3794ff;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
     display: flex;
@@ -38,7 +39,7 @@ h1 {
     color: var(--font-color);
     font-family: var(--header-font);
     text-decoration: underline;
-    font-size: 40px; 
+    font-size: 40px;
 }
 
 #darkmodebtn {
@@ -56,16 +57,18 @@ ul {
     list-style-type: none;
     background-color: var(--bg-row);
     font-family: var(--primary-font);
+    padding: 0;
+    margin: 0 auto;
+    width: 90%;
 }
 
 .task {
     display: flex;
     flex-direction: row;
-    width: 90%;
     border-bottom: 1px solid #e4d7b9;
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;
-    font-size: 20px;
+    font-size: 16px;
 }
 
 .completed {
@@ -82,6 +85,7 @@ ul {
 
 .task textarea {
     background-color: inherit;
+
     flex-grow: 1;
     border: none;
     resize: none;
@@ -93,12 +97,17 @@ ul {
     height: auto;
 }
 
+.task textarea:focus {
+    outline: none;
+    box-shadow: 0 0 5px var(--accent-color);
+}
+
 .task button {
     margin-left: auto;
     background-color: var(--btn-bg);
     border: 3px solid var(--font-color);
-    height: 35px;
-    width: 35px;
+    height: 30px;
+    width: 30px;
     align-self: center;
 }
 
@@ -112,7 +121,11 @@ footer {
     color: var(--font-color);
 }
 
+button:hover {
+    background-color: var(--btn-hover-bg);
+}
+
 button:active {
-  transform: scale(0.95);
-  transition: transform 0.1s ease;
+    transform: scale(0.95);
+    transition: transform 0.1s ease;
 }
