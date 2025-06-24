@@ -33,7 +33,11 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     function undoDelete() {
-        console.log(deleteHistory);
+        //Check this now before returning anything; we will pop this 1 element so undo button should disable
+        if (deleteHistory.length == 1) {
+            undobtn.disabled = true;
+        }
+
         let data = deleteHistory.pop();
         if (checkForDuplicate(data.deletedTask.text)) {
             alert("You've already added this task back to the list.");
@@ -165,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         tasklist.removeChild(li);
         deleteHistory.push({ row: li, deletedTask: task });
-        console.log(deleteHistory);
+        undobtn.disabled = false;
     }
 
     function toggleComplete(li, task) {
