@@ -2,6 +2,7 @@
     --bg-page: #fdf6e3;
     --bg-row: #fff9e6;
     --font-color: #4b3b2b;
+    --placeholder-color: #b8a88f;
     --border-color: #e4d7b9;
     --btn-bg: #d9c89b;
     --btn-hover-bg: #cdb67a;
@@ -15,6 +16,7 @@
     --bg-page: #1e1e1e;
     --bg-row: #252526;
     --font-color: #d4d4d4;
+    --placeholder-color: #7a7a7a;
     --border-color: #3c3c3c;
     --btn-bg: #0e639c;
     --btn-hover-bg: #1177bb;
@@ -59,15 +61,12 @@ ul {
     font-family: var(--primary-font);
     padding: 0;
     margin: 0 auto;
-    width: 90%;
 }
 
 .task {
     display: flex;
     flex-direction: row;
     border-bottom: 1px solid #e4d7b9;
-    padding-bottom: 0.5em;
-    margin-bottom: 0.5em;
     font-size: 16px;
 }
 
@@ -75,7 +74,6 @@ ul {
     background-color: green;
 }
 
-.task textarea,
 .task button {
     color: var(--font-color);
     font-size: inherit;
@@ -83,21 +81,13 @@ ul {
     margin: 0 10px 0 10px;
 }
 
-.task textarea {
-    background-color: inherit;
-
+.task p {
     flex-grow: 1;
-    border: none;
-    resize: none;
-    overflow: hidden;
     white-space: pre-wrap;
-    word-wrap: break-word;
-    line-height: 1.5;
-    box-sizing: border-box;
-    height: auto;
+    overflow-wrap: break-word;
 }
 
-.task textarea:focus {
+.task p:focus {
     outline: none;
     box-shadow: 0 0 5px var(--accent-color);
 }
@@ -109,14 +99,6 @@ ul {
     height: 30px;
     width: 30px;
     align-self: center;
-}
-
-#undobtn {
-    background-color: var(--btn-bg);
-    border: 3px solid var(--font-color);
-    position: fixed;
-    left: 10px;
-    top: 10px;
 }
 
 main {
@@ -136,4 +118,10 @@ button:hover {
 button:active {
     transform: scale(0.95);
     transition: transform 0.1s ease;
+}
+
+p[contenteditable]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--placeholder-color);
+    pointer-events: none;
 }

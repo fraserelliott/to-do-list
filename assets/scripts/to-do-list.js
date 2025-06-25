@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    $("#tabs").tabs();
+
     const tasks = [];
     const deleteHistory = [];
     const tasklist = document.getElementById("tasklist");
