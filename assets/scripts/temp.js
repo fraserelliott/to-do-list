@@ -1,8 +1,6 @@
 const tasks = [];
 
 document.addEventListener('DOMContentLoaded', function () {
-    $("#tabs").tabs();
-
     const taskList = document.getElementById("tasklist");
     const taskinput = document.getElementById("taskinput");
 

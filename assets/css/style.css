@@ -1,6 +1,6 @@
 :root {
-    --bg-page: #fdf6e3;
-    --bg-row: #fff9e6;
+    --bg-page: #f6f6e3;
+    --bg-content: #fff9e6;
     --font-color: #4b3b2b;
     --placeholder-color: #b8a88f;
     --border-color: #e4d7b9;
@@ -14,7 +14,7 @@
 
 .darkmode {
     --bg-page: #1e1e1e;
-    --bg-row: #252526;
+    --bg-content: #252526;
     --font-color: #d4d4d4;
     --placeholder-color: #7a7a7a;
     --border-color: #3c3c3c;
@@ -53,11 +53,12 @@ h1 {
     background-color: transparent;
     cursor: pointer;
     color: var(--font-color);
+    font-family: Arial;
 }
 
 ul {
     list-style-type: none;
-    background-color: var(--bg-row);
+    background-color: var(--bg-content);
     font-family: var(--primary-font);
     padding: 0;
     margin: 0 auto;
@@ -68,6 +69,8 @@ ul {
     flex-direction: row;
     border-bottom: 1px solid #e4d7b9;
     font-size: 16px;
+    align-items: center;
+    min-height: 40px;
 }
 
 .completed {
@@ -78,27 +81,29 @@ ul {
     color: var(--font-color);
     font-size: inherit;
     font-family: inherit;
-    margin: 0 10px 0 10px;
+    margin-left: auto;
+    margin-right: 10px;
+    background-color: var(--btn-bg);
+    border: 3px solid var(--font-color);
+    height: 30px;
+    width: 30px;
 }
 
 .task p {
     flex-grow: 1;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    margin: 0;
+    height: 100%;
     white-space: pre-wrap;
     overflow-wrap: break-word;
+    color: var(--font-color);
 }
 
 .task p:focus {
     outline: none;
     box-shadow: 0 0 5px var(--accent-color);
-}
-
-.task button {
-    margin-left: auto;
-    background-color: var(--btn-bg);
-    border: 3px solid var(--font-color);
-    height: 30px;
-    width: 30px;
-    align-self: center;
 }
 
 main {
@@ -124,4 +129,21 @@ p[contenteditable]:empty::before {
     content: attr(data-placeholder);
     color: var(--placeholder-color);
     pointer-events: none;
+}
+
+/* bootstrap overrides */
+
+.nav {
+    background-color: var(--bg-page);
+}
+
+.nav-link {
+    background-color: var(--bg-content);
+    border: 1px solid black !important;
+    color: var(--font-color) !important;
+}
+
+.nav-link.active {
+    background-color: var(--font-color) !important;
+    color: var(--bg-page) !important;
 }
