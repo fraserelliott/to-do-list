@@ -89,7 +89,11 @@ ul {
     width: 30px;
 }
 
-.task p {
+.timestamp {
+    margin-left: auto;
+}
+
+.tasktext {
     flex-grow: 1;
     display: flex;
     align-items: center;
@@ -101,7 +105,7 @@ ul {
     color: var(--font-color);
 }
 
-.task p:focus {
+.tasktext:focus {
     outline: none;
     box-shadow: 0 0 5px var(--accent-color);
 }

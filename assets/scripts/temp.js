@@ -1,37 +1,42 @@
 const tasks = [];
+const deletedTasks = [];
+let taskList = null;
+let taskInput = null;
+let deletedTaskList = null;
 
 document.addEventListener('DOMContentLoaded', function () {
-    const taskList = document.getElementById("tasklist");
-    const taskinput = document.getElementById("taskinput");
+    taskList = document.getElementById("tasklist");
+    taskInput = document.getElementById("taskinput");
+    deletedTaskList = document.getElementById("deletedtasks");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
     });
 
-    taskinput.addEventListener("blur", () => {
-        parseInput(taskinput, taskList);
+    taskInput.addEventListener("blur", () => {
+        parseInput();
     })
 
-    taskinput.addEventListener("keydown", (event) => {
+    taskInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
-            parseInput(taskinput, taskList);
+            taskInput.blur();
         } else if (event.key === "Escape") {
-            taskinput.textContent = "";
-            taskinput.blur();
+            taskInput.textContent = "";
+            taskInput.blur();
         }
     })
 });
 
-function parseInput(taskinput, taskList) {
-    const text = taskinput.textContent.trim();
+function parseInput() {
+    const text = taskInput.textContent.trim();
 
     if (text === "") {
         return;
     }
 
     if (checkForDuplicate(text)) {
-        taskinput.textContent = "";
+        taskInput.textContent = "";
         alert("You've already added that task.");
         return;
     }
@@ -39,7 +44,7 @@ function parseInput(taskinput, taskList) {
     const task = new Task(text, false);
     tasks.push(task);
     taskList.append(task.taskRow.li);
-    taskinput.textContent = "";
+    taskInput.textContent = "";
 }
 
 function checkForDuplicate(t) {
@@ -59,7 +64,20 @@ class Task {
         this.taskRow.updateCompleteState(this.completed);
     }
 
-    // Add more task-related methods here (e.g. delete, edit)
+    handleDelete() {
+        //First remove this from the tasks list
+        const index = tasks.indexOf(this);
+        if (index !== -1) {
+            tasks.splice(index, 1);
+        }
+
+        //Add to the deleted tasks list
+        deletedTasks.push(this);
+
+        //add to the history tab
+        this.historyRow = new HistoryRow(this.text, new Date());
+        deletedTaskList.append(this.historyRow.li);
+    }
 }
 
 class TaskRow {
@@ -84,6 +102,7 @@ class TaskRow {
         p.textContent = text;
         p.contentEditable = "true";
         p.dataset.placeholder = "Type the task you want to change this to...";
+        p.classList.add("tasktext");
         return p;
     }
 
@@ -104,11 +123,40 @@ class TaskRow {
     }
 
     handleDelete() {
-        tasklist.removeChild(this.li);
+        taskList.removeChild(this.li);
+        this.task.handleDelete();
+    }
+}
 
-        const index = tasks.indexOf(this.task);
-        if (index !== -1) {
-            tasks.splice(index, 1);
-        }
+class HistoryRow {
+    constructor(text, deletedDate) {
+        this.text = text;
+        this.deletedDate = deletedDate;
+
+        this.li = this.createRow();
+        this.p = this.createParagraph(text);
+        this.timestamp = this.createTimestamp(deletedDate);
+
+        this.li.append(this.p, this.timestamp);
+    }
+
+    createRow() {
+        const li = document.createElement("li");
+        li.classList.add("task");
+        return li;
+    }
+
+    createParagraph(text) {
+        const p = document.createElement("p");
+        p.textContent = text;
+        p.classList.add("tasktext");
+        return p;
+    }
+
+    createTimestamp(date) {
+        const p = document.createElement("p");
+        p.textContent = `Deleted at: ${date.toLocaleString()}`;
+        p.class = "timestamp";
+        return p;
     }
 }

@@ -38,7 +38,7 @@
             <div id="tasks" class="tab-pane active">
                 <ul id="tasklist">
                     <li class="task">
-                        <p id="taskinput" contenteditable="true" data-placeholder="Add a task..." tabIndex="-1"></p>
+                        <p id="taskinput" class="tasktext" contenteditable="true" data-placeholder="Add a task..." tabIndex="-1"></p>
                         <!-- <textarea type="textarea" id="taskinput" placeholder="Add a task..." rows="1"></textarea> -->
                     </li>
                     <!-- <li class="task">
@@ -49,7 +49,11 @@
                 </ul>
             </div>
 
-            <div id="history" class="tab-pane fade"></div>
+            <div id="history" class="tab-pane fade">
+                <ul id="deletedtasks">
+
+                </ul>
+            </div>
 
             <div id="settings" class="tab-pane fade"></div>
 
