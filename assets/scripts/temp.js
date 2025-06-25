@@ -156,7 +156,7 @@ class HistoryRow {
     createTimestamp(date) {
         const p = document.createElement("p");
         p.textContent = `Deleted at: ${date.toLocaleString()}`;
-        p.class = "timestamp";
+        p.classList.add("timestamp");
         return p;
     }
 }

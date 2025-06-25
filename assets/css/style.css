@@ -91,6 +91,7 @@ ul {
 
 .timestamp {
     margin-left: auto;
+    color: var(--font-color);
 }
 
 .tasktext {
