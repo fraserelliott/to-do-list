@@ -3,15 +3,14 @@ const deletedTasks = [];
 let taskList = null;
 let taskInput = null;
 let deletedTaskList = null;
-let settings = {
-    autoDelete: false
-}
+const settings = loadSettings();
 
 document.addEventListener('DOMContentLoaded', function () {
     taskList = document.getElementById("tasklist");
     taskInput = document.getElementById("taskinput");
     deletedTaskList = document.getElementById("deletedtasks");
     let clearbtn = document.getElementById("clearbtn");
+    let showDuplicatesInput = document.getElementById("showDuplicates");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
@@ -45,6 +44,14 @@ document.addEventListener('DOMContentLoaded', function () {
         save();
     });
 
+    showDuplicatesInput.checked = settings.showDuplicates;
+
+    showDuplicatesInput.addEventListener("change", (event) => {
+        settings.showDuplicates = showDuplicatesInput.checked;
+        save();
+        updateHistoryVisibility();
+    })
+
     load();
 });
 
@@ -57,7 +64,7 @@ function parseInput() {
 
     if (checkForDuplicate(text)) {
         taskInput.textContent = "";
-        alert("You've already added that task.");
+        createAlert("Task already exists", 2000);
         return;
     }
 
@@ -66,6 +73,7 @@ function parseInput() {
     taskList.append(task.taskRow.li);
     taskInput.textContent = "";
     save();
+    updateHistoryVisibility();
 }
 
 function checkForDuplicate(t) {
@@ -75,12 +83,13 @@ function checkForDuplicate(t) {
 function save() {
     localStorage.setItem("tasks", JSON.stringify(tasks));
     localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks));
+    localStorage.setItem("settings", JSON.stringify(settings));
 }
 
 function load() {
     const tasksParsed = JSON.parse(localStorage.getItem("tasks"));
     const deletedTasksParsed = JSON.parse(localStorage.getItem("deletedTasks"));
-
+    
     tasksParsed.forEach(task => {
         let t = Task.fromJSON(task);
         tasks.push(t);
@@ -94,6 +103,57 @@ function load() {
             deletedTaskList.append(t.historyRow.li);
         }
     });
+
+    updateHistoryVisibility();
+}
+
+function loadSettings() {
+    const parsed = JSON.parse(localStorage.getItem("settings"));
+
+    const defaults = {
+        deleteDuplicates: false,
+        showDuplicates: true
+    };
+
+    return {
+        deleteDuplicates: parsed?.deleteDuplicates ?? defaults.deleteDuplicates,
+        showDuplicates: parsed?.showDuplicates ?? defaults.showDuplicates
+    };
+}
+
+function createAlert(text, delayMs) {
+    const alert = document.createElement("div");
+    alert.className = "erroralert";
+    alert.innerHTML = `${text}`;
+    document.body.appendChild(alert);
+
+    setTimeout(() => {
+        alert.classList.add('hide');
+        setTimeout(() => document.body.removeChild(alert), 150);
+    }, delayMs);
+}
+
+function updateHistoryVisibility() {
+    console.log(`Updating history visibility with settings.showDuplicates=${settings.showDuplicates}`);
+
+    const seen = new Set();
+
+    deletedTasks.forEach(task => {
+        const text = task.text.toLowerCase();
+        const li = task.historyRow.li;
+
+        if (settings.showDuplicates) {
+            li.classList.remove("d-none");
+        } else {
+            const isInTasks = checkForDuplicate(text);
+            if (isInTasks || seen.has(text)) {
+                li.classList.add("d-none");
+            } else {
+                li.classList.remove("d-none");
+                seen.add(text);
+            }
+        }
+    });
 }
 
 class Task {
@@ -101,6 +161,7 @@ class Task {
         this.text = text;
         this.completed = completed;
         this.taskRow = new TaskRow(this);
+        this.displayed = true;
 
         if (completed) {
             this.taskRow.updateCompleteState(true);
@@ -140,6 +201,7 @@ class Task {
         deletedTasks.push(this);
 
         save();
+        updateHistoryVisibility();
     }
 
     handleUndoDelete() {
@@ -158,6 +220,7 @@ class Task {
         tasks.push(this);
 
         save();
+        updateHistoryVisibility();
     }
 
     handlePermaDelete() {
@@ -173,6 +236,7 @@ class Task {
         deletedTaskList.removeChild(this.historyRow.li);
 
         save();
+        updateHistoryVisibility();
     }
 
     parseEdit() {
@@ -180,7 +244,7 @@ class Task {
 
         if (t === "") {
             this.resetTextDisplay();
-            alert("You can't change a task to empty.");
+            createAlert("Task can't be empty", 2000);
             return;
         }
 
@@ -190,10 +254,11 @@ class Task {
 
         if (checkForDuplicate(t)) {
             this.resetTextDisplay();
-            alert("You've already added that task.");
+            createAlert("Task already exists", 2000);
         } else {
             this.text = t;
             save();
+            updateHistoryVisibility();
         }
     }
 

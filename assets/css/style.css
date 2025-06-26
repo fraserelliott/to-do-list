@@ -164,6 +164,25 @@ p[contenteditable]:empty::before {
     color: var(--bg-page) !important;
 }
 
+.erroralert {
+    position: fixed;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    background-color: #f44336;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.15s ease-out;
+    opacity: 0.5;
+}
+
+.erroralert.hide {
+    opacity: 0;
+}
+
 @media (max-width: 768px) {
     .task {
         flex-direction: column;
