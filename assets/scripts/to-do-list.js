@@ -210,6 +210,11 @@ class Task {
             deletedTasks.splice(index, 1);
         }
 
+        if (checkForDuplicate(this.text)) {
+            createAlert("Task already exists", 2000);
+            return;
+        }
+
         //remove from the history tab
         deletedTaskList.removeChild(this.historyRow.li);
 
