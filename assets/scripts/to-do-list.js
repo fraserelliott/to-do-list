@@ -155,8 +155,6 @@ function createAlert(text, delayMs) {
 }
 
 function updateHistoryVisibility() {
-    console.log(`Updating history visibility with settings.showDuplicates=${settings.showDuplicates}`);
-
     const seen = new Set();
 
     deletedTasks.forEach(task => {
