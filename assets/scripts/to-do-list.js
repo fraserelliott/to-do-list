@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     deletedTaskList = document.getElementById("deletedtasks");
     let clearbtn = document.getElementById("clearbtn");
     let showDuplicatesInput = document.getElementById("showDuplicates");
+    let clearCompletedBtn = document.getElementById("clearcompletedbtn");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
@@ -51,6 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
         save();
         updateHistoryVisibility();
     })
+
+    clearCompletedBtn.addEventListener("click", (e) => {
+        clearCompleted();
+    });
 
     load();
 });
@@ -156,6 +161,10 @@ function updateHistoryVisibility() {
     });
 }
 
+function clearCompleted() {
+    tasks.filter(task => task.completed).forEach(task => task.handleDelete());
+}
+
 class Task {
     constructor(text, completed, deletedDate) {
         this.text = text;
@@ -176,6 +185,9 @@ class Task {
     toggleComplete() {
         this.completed = !this.completed;
         this.taskRow.updateCompleteState(this.completed);
+        if (settings.deleteDuplicates && this.completed) {
+            this.handleDelete();
+        }
         save();
     }
 
@@ -347,6 +359,7 @@ class TaskRow {
         const btn = document.createElement("button");
         btn.textContent = text;
         btn.ariaLabel = ariaLabel;
+        btn.classList.add("mybtn");
         btn.addEventListener("click", onClick);
         return btn;
     }
@@ -408,6 +421,7 @@ class HistoryRow {
         const btn = document.createElement("button");
         btn.textContent = text;
         btn.ariaLabel = ariaLabel;
+        btn.classList.add("mybtn");
         btn.addEventListener("click", onClick);
         return btn;
     }

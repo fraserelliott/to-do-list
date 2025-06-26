@@ -46,8 +46,8 @@ h1 {
 
 #darkmodebtn {
     position: fixed;
-    right: 10px;
-    top: 10px;
+    right: 0px;
+    top: 0px;
     border: none;
     font-size: 30px;
     background-color: transparent;
@@ -78,15 +78,23 @@ ul {
 }
 
 .task button {
-    color: var(--font-color);
     font-size: inherit;
     font-family: inherit;
     margin: 0 5px;
-    background-color: var(--btn-bg);
-    border: 3px solid var(--font-color);
     height: 30px;
     width: 30px;
     padding: 0;
+}
+
+.mybtn {
+    color: var(--font-color);
+    background-color: var(--btn-bg);
+    border: 3px solid var(--font-color);
+}
+
+.anchor-right {
+    margin-left: auto;
+    margin-right: 10px;
 }
 
 .timestamp {
@@ -147,23 +155,6 @@ p[contenteditable]:empty::before {
     color: var(--font-color);
 }
 
-/* bootstrap overrides */
-
-.nav {
-    background-color: var(--bg-page);
-}
-
-.nav-link {
-    background-color: var(--bg-content);
-    border: 1px solid black !important;
-    color: var(--font-color) !important;
-}
-
-.nav-link.active {
-    background-color: var(--font-color) !important;
-    color: var(--bg-page) !important;
-}
-
 .erroralert {
     position: fixed;
     top: 150px;
@@ -181,6 +172,23 @@ p[contenteditable]:empty::before {
 
 .erroralert.hide {
     opacity: 0;
+}
+
+/* bootstrap overrides */
+
+.nav {
+    background-color: var(--bg-page);
+}
+
+.nav-link {
+    background-color: var(--bg-content);
+    border: 1px solid black !important;
+    color: var(--font-color) !important;
+}
+
+.nav-link.active {
+    background-color: var(--btn-bg) !important;
+    color: var(--font-color) !important;
 }
 
 @media (max-width: 768px) {
