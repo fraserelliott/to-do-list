@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function () {
             taskInput.blur();
         }
     })
+
+    load();
 });
 
 function parseInput() {
@@ -45,23 +47,57 @@ function parseInput() {
     tasks.push(task);
     taskList.append(task.taskRow.li);
     taskInput.textContent = "";
+    save();
 }
 
-function checkForDuplicate(t) {
+function checkForDuplicate(t) { //TODO: change to take array input
     return tasks.some(task => task.text === t);
 }
 
+function save() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks));
+}
+
+function load() {
+    const tasksParsed = JSON.parse(localStorage.getItem("tasks"));
+    const deletedTasksParsed = JSON.parse(localStorage.getItem("deletedTasks"));
+
+    tasksParsed.forEach(task => {
+        let t = Task.fromJSON(task);
+        tasks.push(t);
+        taskList.append(t.taskRow.li);
+    });
+
+    deletedTasksParsed.forEach(task => {
+        let t = Task.fromJSON(task);
+        deletedTasks.push(t);
+        if (t.historyRow) {
+            deletedTaskList.append(t.historyRow.li);
+        }
+    });
+}
 
 class Task {
-    constructor(text, completed) {
+    constructor(text, completed, deletedDate) {
         this.text = text;
         this.completed = completed;
         this.taskRow = new TaskRow(this);
+
+        if (completed) {
+            this.taskRow.updateCompleteState(true);
+        }
+
+        if (deletedDate) {
+            this.deletedDate = deletedDate;
+            this.historyRow = new HistoryRow(text, deletedDate);
+        }
     }
 
     toggleComplete() {
         this.completed = !this.completed;
         this.taskRow.updateCompleteState(this.completed);
+        save();
     }
 
     handleDelete() {
@@ -71,12 +107,31 @@ class Task {
             tasks.splice(index, 1);
         }
 
+        //add to the history tab
+        this.deletedDate = new Date();
+        this.historyRow = new HistoryRow(this.text, this.deletedDate);
+        deletedTaskList.append(this.historyRow.li);
+
         //Add to the deleted tasks list
         deletedTasks.push(this);
 
-        //add to the history tab
-        this.historyRow = new HistoryRow(this.text, new Date());
-        deletedTaskList.append(this.historyRow.li);
+        save();
+    }
+
+    toJSON() {
+        return {
+            text: this.text,
+            completed: this.completed,
+            deletedDate: this.deletedDate ? this.deletedDate.toISOString() : this.deletedDate
+        };
+    }
+
+    static fromJSON(obj) {
+        return new Task(
+            obj.text,
+            obj.completed,
+            obj.deletedDate ? new Date(obj.deletedDate) : obj.deletedDate // if it's null or undefined keep this, otherwise make a date out of the stored string
+        );
     }
 }
 
@@ -85,16 +140,25 @@ class TaskRow {
         this.task = task;
         this.li = this.createRow();
         this.p = this.createParagraph(task.text);
+
+        this.div = this.createDiv();
         this.completeBtn = this.createButton("\u2713", "Mark Complete", () => this.task.toggleComplete());
         this.deleteBtn = this.createButton("X", "Delete Task", () => this.handleDelete());
+        this.div.append(this.completeBtn, this.deleteBtn);
 
-        this.li.append(this.p, this.completeBtn, this.deleteBtn);
+        this.li.append(this.p, this.div);
     }
 
     createRow() {
         const li = document.createElement("li");
         li.classList.add("task");
         return li;
+    }
+
+    createDiv() {
+        const div = document.createElement("div");
+        div.classList.add("align-right");
+        return div;
     }
 
     createParagraph(text) {
@@ -135,15 +199,29 @@ class HistoryRow {
 
         this.li = this.createRow();
         this.p = this.createParagraph(text);
-        this.timestamp = this.createTimestamp(deletedDate);
 
-        this.li.append(this.p, this.timestamp);
+        this.div = this.createDiv();
+        this.timestamp = this.createTimestamp(deletedDate);
+        this.undoBtn = this.createButton("\u21A9", "Undo Delete", () => this.task.handleUndoDelete())
+        this.div.append(this.timestamp, this.undoBtn);
+
+        this.li.append(this.p, this.div);
+    }
+
+    handleUndoDelete() {
+        //TODO: handleUndoDelete
     }
 
     createRow() {
         const li = document.createElement("li");
         li.classList.add("task");
         return li;
+    }
+
+    createDiv() {
+        const div = document.createElement("div");
+        div.classList.add("align-right");
+        return div;
     }
 
     createParagraph(text) {
@@ -158,5 +236,13 @@ class HistoryRow {
         p.textContent = `Deleted at: ${date.toLocaleString()}`;
         p.classList.add("timestamp");
         return p;
+    }
+
+    createButton(text, ariaLabel, onClick) {
+        const btn = document.createElement("button");
+        btn.textContent = text;
+        btn.ariaLabel = ariaLabel;
+        btn.addEventListener("click", onClick);
+        return btn;
     }
 }

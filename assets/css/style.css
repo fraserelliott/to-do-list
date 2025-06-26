@@ -81,8 +81,7 @@ ul {
     color: var(--font-color);
     font-size: inherit;
     font-family: inherit;
-    margin-left: auto;
-    margin-right: 10px;
+    margin: 0 5px;
     background-color: var(--btn-bg);
     border: 3px solid var(--font-color);
     height: 30px;
@@ -90,8 +89,8 @@ ul {
 }
 
 .timestamp {
-    margin-left: auto;
     color: var(--font-color);
+    margin: 0;
 }
 
 .tasktext {
@@ -134,6 +133,13 @@ p[contenteditable]:empty::before {
     content: attr(data-placeholder);
     color: var(--placeholder-color);
     pointer-events: none;
+}
+
+.align-right {
+    margin-left: auto;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 /* bootstrap overrides */
