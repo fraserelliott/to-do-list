@@ -118,6 +118,32 @@ class Task {
         save();
     }
 
+    parseEdit() {
+        const t = this.taskRow.p.textContent;
+
+        if (t === "") {
+            this.resetTextDisplay();
+            alert("You can't change a task to empty.");
+            return;
+        }
+
+        if (t === this.text) {
+            return
+        }
+
+        if (checkForDuplicate(t)) {
+            this.resetTextDisplay();
+            alert("You've already added that task.");
+        } else {
+            this.text = t;
+            save();
+        }
+    }
+
+    resetTextDisplay() {
+        this.taskRow.p.textContent = this.text;
+    }
+
     toJSON() {
         return {
             text: this.text,
@@ -140,10 +166,30 @@ class TaskRow {
         this.task = task;
         this.li = this.createRow();
         this.p = this.createParagraph(task.text);
+        this.p.addEventListener("blur", () => {
+            this.task.parseEdit();
+        });
+
+        this.p.addEventListener("keydown", (event) => {
+            switch (event.key) {
+                case "Enter":
+                    event.preventDefault();
+                    this.p.blur();
+                    break;
+                case "Escape":
+                    this.task.resetTextDisplay();
+                    this.p.blur();
+                    break;
+            }
+        });
+
+        this.p.addEventListener("dblclick", () => {
+            this.task.toggleComplete();
+        });
 
         this.div = this.createDiv();
         this.completeBtn = this.createButton("\u2713", "Mark Complete", () => this.task.toggleComplete());
-        this.deleteBtn = this.createButton("X", "Delete Task", () => this.handleDelete());
+        this.deleteBtn = this.createButton("\u274C", "Delete Task", () => this.handleDelete());
         this.div.append(this.completeBtn, this.deleteBtn);
 
         this.li.append(this.p, this.div);
@@ -202,14 +248,19 @@ class HistoryRow {
 
         this.div = this.createDiv();
         this.timestamp = this.createTimestamp(deletedDate);
-        this.undoBtn = this.createButton("\u21A9", "Undo Delete", () => this.task.handleUndoDelete())
-        this.div.append(this.timestamp, this.undoBtn);
+        this.undoBtn = this.createButton("\u21A9", "Undo Delete", () => this.task.handleUndoDelete());
+        this.permaDeleteBtn = this.createButton("\uD83D\uDDD1", () => this.handlePermaDelete());
+        this.div.append(this.timestamp, this.undoBtn, this.permaDeleteBtn);
 
         this.li.append(this.p, this.div);
     }
 
     handleUndoDelete() {
         //TODO: handleUndoDelete
+    }
+
+    handlePermaDelete() {
+        //TODO: handlePermaDelete
     }
 
     createRow() {
