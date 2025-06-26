@@ -90,7 +90,7 @@ ul {
 }
 
 .timestamp {
-    color: var(--font-color);
+    color: #b33a3a;
     margin: 0;
 }
 
@@ -143,6 +143,10 @@ p[contenteditable]:empty::before {
     align-items: center;
 }
 
+#settings label {
+    color: var(--font-color);
+}
+
 /* bootstrap overrides */
 
 .nav {
@@ -158,4 +162,14 @@ p[contenteditable]:empty::before {
 .nav-link.active {
     background-color: var(--font-color) !important;
     color: var(--bg-page) !important;
+}
+
+@media (max-width: 768px) {
+    .task {
+        flex-direction: column;
+    }
+    
+    .align-right {
+        margin-left: 0;
+    }
 }

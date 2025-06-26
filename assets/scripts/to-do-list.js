@@ -142,8 +142,11 @@ class Task {
         save();
     }
 
-    handlePermaDelete(li) {
+    handlePermaDelete() {
         const index = deletedTasks.indexOf(this);
+
+        console.log(`Permanently deleting element ${this.text}, this is in deletedTasks at index ${index}`);
+
         if (index !== -1) {
             deletedTasks.splice(index, 1);
         }
@@ -281,7 +284,7 @@ class HistoryRow {
         this.div = this.createDiv();
         this.timestamp = this.createTimestamp(deletedDate);
         this.undoBtn = this.createButton("\u21A9", "Undo Delete", () => this.task.handleUndoDelete());
-        this.permaDeleteBtn = this.createButton("\uD83D\uDDD1", () => this.task.handlePermaDelete());
+        this.permaDeleteBtn = this.createButton("\uD83D\uDDD1", "Permanently Delete", () => this.task.handlePermaDelete());
         this.div.append(this.timestamp, this.undoBtn, this.permaDeleteBtn);
 
         this.li.append(this.p, this.div);
