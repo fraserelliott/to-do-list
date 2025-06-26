@@ -167,7 +167,7 @@ p[contenteditable]:empty::before {
     border-radius: 6px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     transition: opacity 0.15s ease-out;
-    opacity: 0.5;
+    opacity: 0.8;
 }
 
 .erroralert.hide {
