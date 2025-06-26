@@ -3,11 +3,15 @@ const deletedTasks = [];
 let taskList = null;
 let taskInput = null;
 let deletedTaskList = null;
+let settings = {
+    autoDelete: false
+}
 
 document.addEventListener('DOMContentLoaded', function () {
     taskList = document.getElementById("tasklist");
     taskInput = document.getElementById("taskinput");
     deletedTaskList = document.getElementById("deletedtasks");
+    let clearbtn = document.getElementById("clearbtn");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
@@ -26,6 +30,20 @@ document.addEventListener('DOMContentLoaded', function () {
             taskInput.blur();
         }
     })
+
+    clearbtn.addEventListener("click", (e) => {
+        while (tasks.length > 0) {
+            let task = tasks.pop();
+            taskList.removeChild(task.taskRow.li);
+        }
+
+        while (deletedTasks.length > 0) {
+            let task = deletedTasks.pop();
+            deletedTaskList.removeChild(task.historyRow.li);
+        }
+
+        save();
+    });
 
     load();
 });
