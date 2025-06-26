@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     deletedTaskList = document.getElementById("deletedtasks");
     let clearbtn = document.getElementById("clearbtn");
     let showDuplicatesInput = document.getElementById("showDuplicates");
+    let deleteCompletedInput = document.getElementById("deletecompleted");
     let clearCompletedBtn = document.getElementById("clearcompletedbtn");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
@@ -51,6 +52,13 @@ document.addEventListener('DOMContentLoaded', function () {
         settings.showDuplicates = showDuplicatesInput.checked;
         save();
         updateHistoryVisibility();
+    })
+
+    deleteCompletedInput.checked = settings.deleteCompleted;
+
+    deleteCompletedInput.addEventListener("change", (event) => {
+        settings.deleteCompleted = deleteCompletedInput.checked;
+        save();
     })
 
     clearCompletedBtn.addEventListener("click", (e) => {
@@ -116,12 +124,12 @@ function loadSettings() {
     const parsed = JSON.parse(localStorage.getItem("settings"));
 
     const defaults = {
-        deleteDuplicates: false,
+        deleteCompleted: false,
         showDuplicates: true
     };
 
     return {
-        deleteDuplicates: parsed?.deleteDuplicates ?? defaults.deleteDuplicates,
+        deleteCompleted: parsed?.deleteCompleted ?? defaults.deleteCompleted,
         showDuplicates: parsed?.showDuplicates ?? defaults.showDuplicates
     };
 }
@@ -185,7 +193,7 @@ class Task {
     toggleComplete() {
         this.completed = !this.completed;
         this.taskRow.updateCompleteState(this.completed);
-        if (settings.deleteDuplicates && this.completed) {
+        if (settings.deleteCompleted && this.completed) {
             this.handleDelete();
         }
         save();
