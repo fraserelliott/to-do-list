@@ -68,8 +68,8 @@ function parseInput() {
     save();
 }
 
-function checkForDuplicate(t) { //TODO: change to take array input
-    return tasks.some(task => task.text === t);
+function checkForDuplicate(t) {
+    return tasks.some(task => task.text.toUpperCase() === t.toUpperCase());
 }
 
 function save() {
