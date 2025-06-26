@@ -90,7 +90,7 @@ class Task {
 
         if (deletedDate) {
             this.deletedDate = deletedDate;
-            this.historyRow = new HistoryRow(text, deletedDate);
+            this.historyRow = new HistoryRow(this, text, deletedDate);
         }
     }
 
@@ -107,13 +107,49 @@ class Task {
             tasks.splice(index, 1);
         }
 
+        //Remove from the tasks tab
+        taskList.removeChild(this.taskRow.li);
+
+        //Reset history row
+        this.historyRow = null;
+
         //add to the history tab
         this.deletedDate = new Date();
-        this.historyRow = new HistoryRow(this.text, this.deletedDate);
+        this.historyRow = new HistoryRow(this, this.text, this.deletedDate);
         deletedTaskList.append(this.historyRow.li);
 
         //Add to the deleted tasks list
         deletedTasks.push(this);
+
+        save();
+    }
+
+    handleUndoDelete() {
+        const index = deletedTasks.indexOf(this);
+        if (index !== -1) {
+            deletedTasks.splice(index, 1);
+        }
+
+        //remove from the history tab
+        deletedTaskList.removeChild(this.historyRow.li);
+
+        //add to the tasks tab
+        taskList.append(this.taskRow.li);
+
+        //Add to the task list
+        tasks.push(this);
+
+        save();
+    }
+
+    handlePermaDelete(li) {
+        const index = deletedTasks.indexOf(this);
+        if (index !== -1) {
+            deletedTasks.splice(index, 1);
+        }
+
+        //remove from the history tab
+        deletedTaskList.removeChild(this.historyRow.li);
 
         save();
     }
@@ -189,7 +225,7 @@ class TaskRow {
 
         this.div = this.createDiv();
         this.completeBtn = this.createButton("\u2713", "Mark Complete", () => this.task.toggleComplete());
-        this.deleteBtn = this.createButton("\u274C", "Delete Task", () => this.handleDelete());
+        this.deleteBtn = this.createButton("\u274C", "Delete Task", () => this.task.handleDelete());
         this.div.append(this.completeBtn, this.deleteBtn);
 
         this.li.append(this.p, this.div);
@@ -231,15 +267,11 @@ class TaskRow {
             this.li.classList.remove("completed");
         }
     }
-
-    handleDelete() {
-        taskList.removeChild(this.li);
-        this.task.handleDelete();
-    }
 }
 
 class HistoryRow {
-    constructor(text, deletedDate) {
+    constructor(task, text, deletedDate) {
+        this.task = task;
         this.text = text;
         this.deletedDate = deletedDate;
 
@@ -249,18 +281,10 @@ class HistoryRow {
         this.div = this.createDiv();
         this.timestamp = this.createTimestamp(deletedDate);
         this.undoBtn = this.createButton("\u21A9", "Undo Delete", () => this.task.handleUndoDelete());
-        this.permaDeleteBtn = this.createButton("\uD83D\uDDD1", () => this.handlePermaDelete());
+        this.permaDeleteBtn = this.createButton("\uD83D\uDDD1", () => this.task.handlePermaDelete());
         this.div.append(this.timestamp, this.undoBtn, this.permaDeleteBtn);
 
         this.li.append(this.p, this.div);
-    }
-
-    handleUndoDelete() {
-        //TODO: handleUndoDelete
-    }
-
-    handlePermaDelete() {
-        //TODO: handlePermaDelete
     }
 
     createRow() {
