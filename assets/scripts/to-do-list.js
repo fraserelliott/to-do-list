@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
+        settings.darkMode = !settings.darkMode;
+        save();
     });
 
     taskInput.addEventListener("blur", () => {
@@ -65,6 +67,10 @@ document.addEventListener('DOMContentLoaded', function () {
         clearCompleted();
     });
 
+    if (settings.darkMode) {
+        document.body.classList.toggle('darkmode');
+    }
+
     load();
 });
 
@@ -102,7 +108,7 @@ function save() {
 function load() {
     const tasksParsed = JSON.parse(localStorage.getItem("tasks"));
     const deletedTasksParsed = JSON.parse(localStorage.getItem("deletedTasks"));
-    
+
     tasksParsed.forEach(task => {
         let t = Task.fromJSON(task);
         tasks.push(t);
@@ -125,12 +131,14 @@ function loadSettings() {
 
     const defaults = {
         deleteCompleted: false,
-        showDuplicates: true
+        showDuplicates: true,
+        darkMode: false
     };
 
     return {
         deleteCompleted: parsed?.deleteCompleted ?? defaults.deleteCompleted,
-        showDuplicates: parsed?.showDuplicates ?? defaults.showDuplicates
+        showDuplicates: parsed?.showDuplicates ?? defaults.showDuplicates,
+        darkMode: parsed?.darkMode ?? defaults.darkMode
     };
 }
 
