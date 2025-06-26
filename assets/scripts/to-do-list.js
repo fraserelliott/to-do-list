@@ -1,186 +1,323 @@
+const tasks = [];
+const deletedTasks = [];
+let taskList = null;
+let taskInput = null;
+let deletedTaskList = null;
+
 document.addEventListener('DOMContentLoaded', function () {
-
-    $("#tabs").tabs();
-
-    const tasks = [];
-    const deleteHistory = [];
-    const tasklist = document.getElementById("tasklist");
-    const taskinput = document.getElementById("taskinput");
-    const undobtn = document.getElementById("undobtn");
+    taskList = document.getElementById("tasklist");
+    taskInput = document.getElementById("taskinput");
+    deletedTaskList = document.getElementById("deletedtasks");
 
     document.getElementById('darkmodebtn').addEventListener("click", (e) => {
         document.body.classList.toggle('darkmode');
     });
 
-    taskinput.addEventListener("blur", () => {
+    taskInput.addEventListener("blur", () => {
         parseInput();
     })
 
-    taskinput.addEventListener("keydown", (event) => {
+    taskInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") {
             event.preventDefault();
-            parseInput();
+            taskInput.blur();
         } else if (event.key === "Escape") {
-            taskinput.value = "";
-            taskinput.blur();
+            taskInput.textContent = "";
+            taskInput.blur();
         }
     })
 
-    taskinput.addEventListener('input', function () {
-        resizeTextArea(this);
+    load();
+});
+
+function parseInput() {
+    const text = taskInput.textContent.trim();
+
+    if (text === "") {
+        return;
+    }
+
+    if (checkForDuplicate(text)) {
+        taskInput.textContent = "";
+        alert("You've already added that task.");
+        return;
+    }
+
+    const task = new Task(text, false);
+    tasks.push(task);
+    taskList.append(task.taskRow.li);
+    taskInput.textContent = "";
+    save();
+}
+
+function checkForDuplicate(t) { //TODO: change to take array input
+    return tasks.some(task => task.text === t);
+}
+
+function save() {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    localStorage.setItem("deletedTasks", JSON.stringify(deletedTasks));
+}
+
+function load() {
+    const tasksParsed = JSON.parse(localStorage.getItem("tasks"));
+    const deletedTasksParsed = JSON.parse(localStorage.getItem("deletedTasks"));
+
+    tasksParsed.forEach(task => {
+        let t = Task.fromJSON(task);
+        tasks.push(t);
+        taskList.append(t.taskRow.li);
     });
 
-    undobtn.addEventListener("click", (e) => {
-        undoDelete();
+    deletedTasksParsed.forEach(task => {
+        let t = Task.fromJSON(task);
+        deletedTasks.push(t);
+        if (t.historyRow) {
+            deletedTaskList.append(t.historyRow.li);
+        }
     });
+}
 
-    function undoDelete() {
-        //Check this now before returning anything; we will pop this 1 element so undo button should disable
-        if (deleteHistory.length == 1) {
-            undobtn.disabled = true;
+class Task {
+    constructor(text, completed, deletedDate) {
+        this.text = text;
+        this.completed = completed;
+        this.taskRow = new TaskRow(this);
+
+        if (completed) {
+            this.taskRow.updateCompleteState(true);
         }
 
-        let data = deleteHistory.pop();
-        if (checkForDuplicate(data.deletedTask.text)) {
-            alert("You've already added this task back to the list.");
-        } else {
-            tasks.push(data.deletedTask);
-            tasklist.append(data.row);
-        }
-    }
-
-    function parseInput() {
-        const text = taskinput.value.trim();
-
-        if (text !== "") {
-            addTask(text);
+        if (deletedDate) {
+            this.deletedDate = deletedDate;
+            this.historyRow = new HistoryRow(this, text, deletedDate);
         }
     }
 
-    function resetInput() {
-        taskinput.value = "";
-        resizeTextArea(taskinput);
+    toggleComplete() {
+        this.completed = !this.completed;
+        this.taskRow.updateCompleteState(this.completed);
+        save();
     }
 
-    function addTask(t) {
-        if (t === "") {
-            alert("You can't add an empty task.");
-            return;
-        }
-
-        if (checkForDuplicate(t)) {
-            resetInput();
-            alert("You've already added that task.");
-            return;
-        }
-
-        let task = {
-            text: t,
-            completed: false
-        };
-
-        tasks.push(task);
-
-        //Flexbox container for the row
-        let li = document.createElement("li");
-        li.classList.add("task");
-
-
-        //The text for the task
-        let textarea = document.createElement("textarea");
-        textarea.value = t;
-        textarea.rows = 1;
-
-        textarea.addEventListener("blur", () => {
-            parseEdit(textarea, task);
-        });
-
-        textarea.addEventListener("keydown", (event) => {
-            if (event.key === "Enter") {
-                event.preventDefault();
-            } if (event.key === "Escape") {
-                textarea.value = task.text;
-                textarea.blur();
-            }
-        });
-
-        textarea.addEventListener("dblclick", () => {
-            toggleComplete(li, task);
-        });
-
-        textarea.addEventListener('input', function () {
-            resizeTextArea(this);
-        });
-
-        li.appendChild(textarea);
-
-        //Button to mark it complete
-        let completebtn = document.createElement("button");
-        completebtn.textContent = "\u2713";
-        completebtn.setAttribute('aria-label', 'Mark Complete');
-        completebtn.addEventListener("click", (e) => {
-            toggleComplete(li, task);
-        });
-        li.appendChild(completebtn);
-
-        //Button to delete
-        let deletebtn = document.createElement("button");
-        deletebtn.textContent = "X";
-        deletebtn.setAttribute('aria-label', 'Delete');
-        deletebtn.addEventListener("click", (e) => {
-            deleteElement(li, task);
-        });
-        li.appendChild(deletebtn);
-
-        tasklist.append(li);
-        resizeTextArea(textarea);
-        resetInput();
-    }
-
-    function parseEdit(textarea, task) {
-        const t = textarea.value;
-
-        if (t === "") {
-            alert("You can't change a task to empty.");
-            textarea.value = task.text;
-            return;
-        }
-
-        //First check if the text has changed from the original task before checking for duplicates to avoid it returning true because the text hasn't changed (and therefore array already contains this)
-        if (t === task.text) {
-            return;
-        }
-
-        if (checkForDuplicate(t)) {
-            alert("You've already added that task.");
-            textarea.value = task.text;
-        } else {
-            task.text = t;
-        }
-    }
-
-    function checkForDuplicate(t) {
-        return tasks.some(task => task.text === t);
-    }
-
-    function deleteElement(li, task) {
-        const index = tasks.indexOf(task);
+    handleDelete() {
+        //First remove this from the tasks list
+        const index = tasks.indexOf(this);
         if (index !== -1) {
             tasks.splice(index, 1);
         }
 
-        tasklist.removeChild(li);
-        deleteHistory.push({ row: li, deletedTask: task });
-        undobtn.disabled = false;
+        //Remove from the tasks tab
+        taskList.removeChild(this.taskRow.li);
+
+        //Reset history row
+        this.historyRow = null;
+
+        //add to the history tab
+        this.deletedDate = new Date();
+        this.historyRow = new HistoryRow(this, this.text, this.deletedDate);
+        deletedTaskList.append(this.historyRow.li);
+
+        //Add to the deleted tasks list
+        deletedTasks.push(this);
+
+        save();
     }
 
-    function toggleComplete(li, task) {
-        task.completed = !task.completed;
-        li.classList.toggle("completed");
+    handleUndoDelete() {
+        const index = deletedTasks.indexOf(this);
+        if (index !== -1) {
+            deletedTasks.splice(index, 1);
+        }
+
+        //remove from the history tab
+        deletedTaskList.removeChild(this.historyRow.li);
+
+        //add to the tasks tab
+        taskList.append(this.taskRow.li);
+
+        //Add to the task list
+        tasks.push(this);
+
+        save();
     }
 
-    function resizeTextArea(textArea) {
-        textArea.style.height = 'auto';
-        textArea.style.height = textArea.scrollHeight + 'px';
+    handlePermaDelete(li) {
+        const index = deletedTasks.indexOf(this);
+        if (index !== -1) {
+            deletedTasks.splice(index, 1);
+        }
+
+        //remove from the history tab
+        deletedTaskList.removeChild(this.historyRow.li);
+
+        save();
     }
-});
+
+    parseEdit() {
+        const t = this.taskRow.p.textContent;
+
+        if (t === "") {
+            this.resetTextDisplay();
+            alert("You can't change a task to empty.");
+            return;
+        }
+
+        if (t === this.text) {
+            return
+        }
+
+        if (checkForDuplicate(t)) {
+            this.resetTextDisplay();
+            alert("You've already added that task.");
+        } else {
+            this.text = t;
+            save();
+        }
+    }
+
+    resetTextDisplay() {
+        this.taskRow.p.textContent = this.text;
+    }
+
+    toJSON() {
+        return {
+            text: this.text,
+            completed: this.completed,
+            deletedDate: this.deletedDate ? this.deletedDate.toISOString() : this.deletedDate
+        };
+    }
+
+    static fromJSON(obj) {
+        return new Task(
+            obj.text,
+            obj.completed,
+            obj.deletedDate ? new Date(obj.deletedDate) : obj.deletedDate // if it's null or undefined keep this, otherwise make a date out of the stored string
+        );
+    }
+}
+
+class TaskRow {
+    constructor(task) {
+        this.task = task;
+        this.li = this.createRow();
+        this.p = this.createParagraph(task.text);
+        this.p.addEventListener("blur", () => {
+            this.task.parseEdit();
+        });
+
+        this.p.addEventListener("keydown", (event) => {
+            switch (event.key) {
+                case "Enter":
+                    event.preventDefault();
+                    this.p.blur();
+                    break;
+                case "Escape":
+                    this.task.resetTextDisplay();
+                    this.p.blur();
+                    break;
+            }
+        });
+
+        this.p.addEventListener("dblclick", () => {
+            this.task.toggleComplete();
+        });
+
+        this.div = this.createDiv();
+        this.completeBtn = this.createButton("\u2713", "Mark Complete", () => this.task.toggleComplete());
+        this.deleteBtn = this.createButton("\u274C", "Delete Task", () => this.task.handleDelete());
+        this.div.append(this.completeBtn, this.deleteBtn);
+
+        this.li.append(this.p, this.div);
+    }
+
+    createRow() {
+        const li = document.createElement("li");
+        li.classList.add("task");
+        return li;
+    }
+
+    createDiv() {
+        const div = document.createElement("div");
+        div.classList.add("align-right");
+        return div;
+    }
+
+    createParagraph(text) {
+        const p = document.createElement("p");
+        p.textContent = text;
+        p.contentEditable = "true";
+        p.dataset.placeholder = "Type the task you want to change this to...";
+        p.classList.add("tasktext");
+        return p;
+    }
+
+    createButton(text, ariaLabel, onClick) {
+        const btn = document.createElement("button");
+        btn.textContent = text;
+        btn.ariaLabel = ariaLabel;
+        btn.addEventListener("click", onClick);
+        return btn;
+    }
+
+    updateCompleteState(completed) {
+        if (completed) {
+            this.li.classList.add("completed");
+        } else {
+            this.li.classList.remove("completed");
+        }
+    }
+}
+
+class HistoryRow {
+    constructor(task, text, deletedDate) {
+        this.task = task;
+        this.text = text;
+        this.deletedDate = deletedDate;
+
+        this.li = this.createRow();
+        this.p = this.createParagraph(text);
+
+        this.div = this.createDiv();
+        this.timestamp = this.createTimestamp(deletedDate);
+        this.undoBtn = this.createButton("\u21A9", "Undo Delete", () => this.task.handleUndoDelete());
+        this.permaDeleteBtn = this.createButton("\uD83D\uDDD1", () => this.task.handlePermaDelete());
+        this.div.append(this.timestamp, this.undoBtn, this.permaDeleteBtn);
+
+        this.li.append(this.p, this.div);
+    }
+
+    createRow() {
+        const li = document.createElement("li");
+        li.classList.add("task");
+        return li;
+    }
+
+    createDiv() {
+        const div = document.createElement("div");
+        div.classList.add("align-right");
+        return div;
+    }
+
+    createParagraph(text) {
+        const p = document.createElement("p");
+        p.textContent = text;
+        p.classList.add("tasktext");
+        return p;
+    }
+
+    createTimestamp(date) {
+        const p = document.createElement("p");
+        p.textContent = `Deleted at: ${date.toLocaleString()}`;
+        p.classList.add("timestamp");
+        return p;
+    }
+
+    createButton(text, ariaLabel, onClick) {
+        const btn = document.createElement("button");
+        btn.textContent = text;
+        btn.ariaLabel = ariaLabel;
+        btn.addEventListener("click", onClick);
+        return btn;
+    }
+}
